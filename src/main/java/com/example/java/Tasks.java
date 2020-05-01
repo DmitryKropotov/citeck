@@ -6,7 +6,6 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,17 +42,26 @@ public class Tasks {
     }
 
     public boolean checkExpressionCorrection(String expression) {
-        StringBuilder regex = new StringBuilder("\\([^\\(\\[\\)\\]]*\\[[^\\(\\[\\)\\]]*\\][^\\(\\[\\)\\]]*\\)");
+        String betweenBrackets = "[^//(//[//]//)]*";
+        StringBuilder regex = new StringBuilder("(\\("+betweenBrackets+"[\\["+betweenBrackets+"\\]]?"+betweenBrackets+"\\))|");
+        regex.append("(\\["+betweenBrackets+"(\\("+betweenBrackets+"\\))?"+betweenBrackets+"\\])");
         Pattern pattern = Pattern.compile(regex.toString());
         Matcher matcher = pattern.matcher(expression);
-        while (matcher.matches()) {
-            if (matcher.groupCount() == 0) {
-                return false;
+        while (matcher.find()) {
+            System.out.println(matcher.groupCount());
+            if (matcher.matches()) {
+                return true;
             }
-            regex.insert(0, "\\(");
-            regex.append("\\[" + regex + "\\]" + regex + "\\)");
-            //regex = "\\(" + regex + "\\[" + regex + "\\]" + regex + "\\)";
+            regex.insert(0, "(\\(" + regex);
+            regex.append("[\\[" + regex + "\\]]?" + regex + "\\))|");
+            regex.append("(\\[" + regex + "(\\(" + regex + "\\))?" + regex + "\\])");
         }
-        return true;
+        return false;
+    }
+
+    public int transformRightZeroToOne(int number) {
+        String revertedStringNumber = new StringBuilder(Integer.toString(number)).reverse().toString();
+        StringBuilder stringResult = new StringBuilder(revertedStringNumber.replaceFirst("0", "1"));
+        return Integer.parseInt(stringResult.reverse().toString());
     }
 }
