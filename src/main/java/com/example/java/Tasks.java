@@ -42,19 +42,28 @@ public class Tasks {
     }
 
     public boolean checkExpressionCorrection(String expression) {
-        String betweenBrackets = "[^//(//[//]//)]*";
-        StringBuilder regex = new StringBuilder("(\\("+betweenBrackets+"[\\["+betweenBrackets+"\\]]?"+betweenBrackets+"\\))|");
-        regex.append("(\\["+betweenBrackets+"(\\("+betweenBrackets+"\\))?"+betweenBrackets+"\\])");
+        String betweenBrackets = "[^\\(\\[\\]\\)]*";
+        StringBuilder regex = new StringBuilder("("+betweenBrackets+"(\\("+betweenBrackets+/*"[\\["+betweenBrackets+"\\]]?"+betweenBrackets+*/"\\)"+betweenBrackets+")|");
+        regex.append("("+betweenBrackets+"\\["+betweenBrackets+/*"(\\("+betweenBrackets+"\\))?"+betweenBrackets+*/"\\])"+betweenBrackets+")");
         Pattern pattern = Pattern.compile(regex.toString());
         Matcher matcher = pattern.matcher(expression);
         while (matcher.find()) {
-            System.out.println(matcher.groupCount());
+            /*int count = matcher.groupCount();
+            System.out.println("groupCount is " + count);
+            for(int i = 0; i<count; i++) {
+                System.out.println(matcher.group(i));
+                System.out.println(matcher.start(i));
+                System.out.println(matcher.end(i));
+            }*/
             if (matcher.matches()) {
                 return true;
             }
-            regex.insert(0, "(\\(" + regex);
-            regex.append("[\\[" + regex + "\\]]?" + regex + "\\))|");
-            regex.append("(\\[" + regex + "(\\(" + regex + "\\))?" + regex + "\\])");
+            String previousRegex = regex.toString();
+            regex.insert(0, "("+betweenBrackets+"(\\(");
+            regex.append(/*"[\\[" + previousRegex + "\\]]?" + previousRegex +*/ "\\)"+betweenBrackets+")|");
+            regex.append("("+betweenBrackets+"\\[" /*+ previousRegex + "(\\(" + previousRegex + "\\))?"*/ + previousRegex + "\\])"+betweenBrackets+")");
+            pattern = Pattern.compile(regex.toString());
+            matcher = pattern.matcher(expression);
         }
         return false;
     }
