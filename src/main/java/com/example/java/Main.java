@@ -21,12 +21,16 @@ public class Main {
         System.out.println(tasks.checkExpressionCorrection("[]"));
         System.out.println(tasks.checkExpressionCorrection("dd"));
         System.out.println(tasks.checkExpressionCorrection(""));*/
-        System.out.println(tasks.checkExpressionCorrection("(())"));
+        /*System.out.println(tasks.checkExpressionCorrection("(())"));
         System.out.println(tasks.checkExpressionCorrection("([()]))"));
-        System.out.println(tasks.checkExpressionCorrection("([(dc)hj]jhj)"));
-        System.out.println(tasks.checkExpressionCorrection("()[]"));
-        System.out.println(tasks.checkExpressionCorrection("()fed"));
-        System.out.println(tasks.checkExpressionCorrection("dsf()"));
+        System.out.println(tasks.checkExpressionCorrection("([(dc)hj]jhj)"));*/
+        //System.out.println(tasks.checkExpressionCorrection("([](cdxcz)[cxzc]()fwe)([]df(dsd)f)"));
+        //System.out.println(tasks.checkExpressionCorrection("[[]df[]]()"));
+        /*System.out.println(tasks.checkExpressionCorrection("[[]df[]()dsdf]"));
+        System.out.println(tasks.checkExpressionCorrection("[[]df[]()dsdf](())"));
+        System.out.println(tasks.checkExpressionCorrection("([[]df[]]())"));
+        System.out.println(tasks.checkExpressionCorrection("()fed"));*/
+        System.out.println(tasks.checkExpressionCorrection("dsf()]"));
         System.out.println(tasks.transformRightZeroToOne(12309303));
     }
 }

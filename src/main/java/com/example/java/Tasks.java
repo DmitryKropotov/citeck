@@ -43,10 +43,12 @@ public class Tasks {
 
     public boolean checkExpressionCorrection(String expression) {
         String betweenBrackets = "[^\\(\\[\\]\\)]*";
-        StringBuilder regex = new StringBuilder("("+betweenBrackets+"(\\("+betweenBrackets+/*"[\\["+betweenBrackets+"\\]]?"+betweenBrackets+*/"\\)"+betweenBrackets+")|");
-        regex.append("("+betweenBrackets+"\\["+betweenBrackets+/*"(\\("+betweenBrackets+"\\))?"+betweenBrackets+*/"\\])"+betweenBrackets+")");
+        //StringBuilder regex = new StringBuilder("("+betweenBrackets+"\\("+betweenBrackets+/*"[\\["+betweenBrackets+"\\]]?"+betweenBrackets+*/"\\)"+betweenBrackets+")|");
+        //regex.append("("+betweenBrackets+"\\["+betweenBrackets+/*"(\\("+betweenBrackets+"\\))?"+betweenBrackets+*/"\\])"+betweenBrackets+")*");*/
+        StringBuilder regex = new StringBuilder("([^\\(\\[\\]\\)]*\\([^\\(\\[\\]\\)]*\\)[^\\(\\[\\]\\)]*)|([^\\(\\[\\]\\)]*\\[[^\\(\\[\\]\\)]*\\][^\\(\\[\\]\\)]*)*");
         Pattern pattern = Pattern.compile(regex.toString());
         Matcher matcher = pattern.matcher(expression);
+        List<String> previousRegexes = new ArrayList();
         while (matcher.find()) {
             /*int count = matcher.groupCount();
             System.out.println("groupCount is " + count);
@@ -58,14 +60,22 @@ public class Tasks {
             if (matcher.matches()) {
                 return true;
             }
-            String previousRegex = regex.toString();
-            regex.insert(0, "("+betweenBrackets+"(\\(");
-            regex.append(/*"[\\[" + previousRegex + "\\]]?" + previousRegex +*/ "\\)"+betweenBrackets+")|");
-            regex.append("("+betweenBrackets+"\\[" /*+ previousRegex + "(\\(" + previousRegex + "\\))?"*/ + previousRegex + "\\])"+betweenBrackets+")");
+            previousRegexes.add(regex.toString());
+            List<String> regexes = combineAll(previousRegexes);
+            regex.insert(0, "(((("+betweenBrackets+"\\("/*+betweenBrackets*/+"(");
+            regex.append(/*"[\\[" + previousRegex + "\\]]?" + previousRegex +*/ ")*"/*+betweenBrackets*/+"\\)"+betweenBrackets+"))*)|");
+            regex.append("(("+betweenBrackets+"\\[(("+previousRegexes.get(previousRegexes.size()-1)+"))*\\]"+betweenBrackets+")))*");
+            //regex.append("([^\\(\\[\\]\\)]*\\[[^\\(\\[\\]\\)]*(([^\\(\\[\\]\\)]*\\([^\\(\\[\\]\\)]*\\)[^\\(\\[\\]\\)]*)|([^\\(\\[\\]\\)]*\\[[^\\(\\[\\]\\)]*\\][^\\(\\[\\]\\)]*)*)[^\\(\\[\\]\\)]*\\][^\\(\\[\\]\\)]*)");
             pattern = Pattern.compile(regex.toString());
             matcher = pattern.matcher(expression);
         }
         return false;
+    }
+
+    private List<String> combineAll(List<String> list) {
+        List<String> result = new ArrayList<>();
+
+        return result;
     }
 
     public int transformRightZeroToOne(int number) {
