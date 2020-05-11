@@ -43,29 +43,45 @@ public class Tasks {
 
     public boolean checkExpressionCorrection(String expression) {
         String betweenBrackets = "[^\\(\\[\\]\\)]*";
-        //StringBuilder regex = new StringBuilder("("+betweenBrackets+"\\("+betweenBrackets+/*"[\\["+betweenBrackets+"\\]]?"+betweenBrackets+*/"\\)"+betweenBrackets+")|");
-        //regex.append("("+betweenBrackets+"\\["+betweenBrackets+/*"(\\("+betweenBrackets+"\\))?"+betweenBrackets+*/"\\])"+betweenBrackets+")*");*/
-        StringBuilder regex = new StringBuilder("([^\\(\\[\\]\\)]*\\([^\\(\\[\\]\\)]*\\)[^\\(\\[\\]\\)]*)|([^\\(\\[\\]\\)]*\\[[^\\(\\[\\]\\)]*\\][^\\(\\[\\]\\)]*)*");
+        StringBuilder regex = new StringBuilder("(([^\\(\\[\\]\\)]*\\([^\\(\\[\\]\\)]*\\)[^\\(\\[\\]\\)]*)|([^\\(\\[\\]\\)]*\\[[^\\(\\[\\]\\)]*\\][^\\(\\[\\]\\)]*))+");
         Pattern pattern = Pattern.compile(regex.toString());
         Matcher matcher = pattern.matcher(expression);
         List<String> previousRegexes = new ArrayList();
         while (matcher.find()) {
-            /*int count = matcher.groupCount();
-            System.out.println("groupCount is " + count);
-            for(int i = 0; i<count; i++) {
-                System.out.println(matcher.group(i));
-                System.out.println(matcher.start(i));
-                System.out.println(matcher.end(i));
-            }*/
             if (matcher.matches()) {
                 return true;
             }
             previousRegexes.add(regex.toString());
             List<String> regexes = combineAll(previousRegexes);
-            regex.insert(0, "(((("+betweenBrackets+"\\("/*+betweenBrackets*/+"(");
-            regex.append(/*"[\\[" + previousRegex + "\\]]?" + previousRegex +*/ ")*"/*+betweenBrackets*/+"\\)"+betweenBrackets+"))*)|");
-            regex.append("(("+betweenBrackets+"\\[(("+previousRegexes.get(previousRegexes.size()-1)+"))*\\]"+betweenBrackets+")))*");
-            //regex.append("([^\\(\\[\\]\\)]*\\[[^\\(\\[\\]\\)]*(([^\\(\\[\\]\\)]*\\([^\\(\\[\\]\\)]*\\)[^\\(\\[\\]\\)]*)|([^\\(\\[\\]\\)]*\\[[^\\(\\[\\]\\)]*\\][^\\(\\[\\]\\)]*)*)[^\\(\\[\\]\\)]*\\][^\\(\\[\\]\\)]*)");
+            for (String reg: regexes) {
+                if (expression.matches(reg)) {
+                    return true;
+                }
+            }
+            StringBuilder newRegex = new StringBuilder("(((("+betweenBrackets+"\\("+betweenBrackets+"(");
+            for (int i = 0; i < regexes.size(); i++) {
+                String reg = regexes.get(i);
+                newRegex.append("("+reg+")");
+                if (i<regexes.size()-1) {
+                    newRegex.append("|");
+                }
+            }
+            newRegex.append(")"+betweenBrackets+"\\)"+betweenBrackets+")))|((("+betweenBrackets+"\\["+betweenBrackets+"(");
+            for (int i = 0; i < regexes.size(); i++) {
+                String reg = regexes.get(i);
+                newRegex.append(reg);
+                if (i<regexes.size()-1) {
+                    newRegex.append("|");
+                }
+            }
+            newRegex.append(")"+betweenBrackets+"\\]"+betweenBrackets+")))+)");
+            for (int i = 0; i < regexes.size(); i++) {
+                String reg = regexes.get(i);
+                newRegex.append("(");
+                newRegex.append(reg);
+                newRegex.append(")?");
+            }
+            regex = newRegex;
             pattern = Pattern.compile(regex.toString());
             matcher = pattern.matcher(expression);
         }
@@ -73,8 +89,36 @@ public class Tasks {
     }
 
     private List<String> combineAll(List<String> list) {
+        if (list.size() == 0) {
+            return new ArrayList<>();
+        }
         List<String> result = new ArrayList<>();
-
+        if (list.size() == 1) {
+            result.add(list.get(0));
+        } else {
+            for (int i = 1; i<=list.size(); i++) {
+               if (i==1) {
+                   for (int j = 0; j < list.size(); j++) {
+                       result.add(list.get(j));
+                   }
+                   continue;
+               }
+               for (int j = i - 1; j <= list.size()-1; j++) {
+                    for (int k = j + 1; k <= list.size(); k++) {
+                        StringBuilder combination = new StringBuilder("");
+                        for (int l = j - i + 1; l <= j; l++) {
+                            combination.append((list.get(l)));
+                        }
+                        result.add(combination.toString());
+                        if (k < list.size()) {
+                            String buffer = list.get(j);
+                            list.set(j, list.get(k));
+                            list.set(k, buffer);
+                        }
+                    }
+               }
+            }
+        }
         return result;
     }
 
